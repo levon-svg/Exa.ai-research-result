@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintor Research — Quality Grading Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#08080c;--bg2:#0e0e14;--bg3:#14141e;--bg4:#1a1a28;--bg5:#222234;
+  --border:#1e1e30;--border2:#2a2a40;
+  --text:#f0f0f8;--text2:#a0a0b8;--text3:#686880;
+  --purple:#8b5cf6;--blue:#3b82f6;--cyan:#06b6d4;--green:#10b981;--orange:#f59e0b;--pink:#ec4899;--red:#ef4444;
+  --radius:16px;--radius-sm:10px;--radius-xs:6px;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* HERO */
+.hero{position:relative;padding:80px 24px 60px;text-align:center;overflow:hidden;isolation:isolate}
+.hero::before{content:'';position:absolute;inset:-50%;background:radial-gradient(ellipse 60% 50% at 25% 40%,rgba(16,185,129,.1),transparent 55%),radial-gradient(ellipse 50% 60% at 75% 35%,rgba(139,92,246,.08),transparent 50%);animation:drift 20s ease-in-out infinite alternate;z-index:-1}
+@keyframes drift{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(-3%,3%) rotate(2deg)}}
+
+.hero-inner{max-width:780px;margin:0 auto}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:100px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-size:clamp(32px,5.5vw,56px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:14px;background:linear-gradient(135deg,#fff 10%,#6ee7b7 40%,#a78bfa 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:17px;color:var(--text2);max-width:560px;margin:0 auto 44px;line-height:1.65}
+
+/* OVERALL GRADE */
+.grade-hero{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:16px}
+.grade-circle{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #eab308;background:#eab30810;box-shadow:0 0 40px #eab30820}
+.grade-letter{font-size:42px;font-weight:900;color:#eab308;line-height:1}
+.grade-score-num{font-size:14px;color:var(--text2);font-weight:600}
+.grade-details span{display:block;text-align:left;font-size:14px;color:var(--text2);line-height:1.8}
+.grade-details strong{color:var(--text);font-weight:600}
+
+/* SECTIONS */
+.section{max-width:960px;margin:0 auto;padding:48px 24px 0}
+.section-title{font-size:24px;font-weight:800;margin-bottom:6px;letter-spacing:-.5px}
+.section-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
+
+/* DISTRIBUTION */
+.dist-row{display:grid;grid-template-columns:36px 1fr 48px 52px;gap:10px;align-items:center;margin-bottom:6px}
+.dist-grade{font-size:14px;font-weight:800;text-align:right}
+.dist-bar-bg{height:24px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.dist-bar-fill{height:100%;border-radius:4px;transition:width .6s var(--ease);min-width:2px}
+.dist-count{font-size:13px;font-weight:600;color:var(--text2);text-align:right}
+.dist-pct{font-size:12px;color:var(--text3);text-align:right}
+
+/* CRITERIA */
+.criteria-row{display:grid;grid-template-columns:1fr 42px 180px 42px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.criteria-info{min-width:0}
+.criteria-name{display:block;font-size:13px;font-weight:600;color:var(--text)}
+.criteria-desc{display:block;font-size:11px;color:var(--text3)}
+.criteria-pts{font-size:12px;font-weight:700;color:var(--green);text-align:center}
+.criteria-bar-bg{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.criteria-bar-fill{height:100%;background:var(--purple);border-radius:4px;transition:width .6s var(--ease)}
+.criteria-pct{font-size:12px;font-weight:600;color:var(--text2);text-align:right}
+
+/* RANKING */
+.rank-row{display:grid;grid-template-columns:36px 36px 1fr 42px auto;gap:10px;align-items:center;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);margin-bottom:4px;transition:border-color .2s var(--ease)}
+.rank-row:hover{border-color:var(--border2)}
+.rank-pos{font-size:13px;font-weight:700;color:var(--text3);text-align:center}
+.rank-grade{font-size:16px;font-weight:900;text-align:center}
+.rank-info{min-width:0}
+.rank-title{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-bar-bg{height:6px;background:var(--bg5);border-radius:3px;overflow:hidden;margin-top:4px}
+.rank-bar-fill{height:100%;border-radius:3px;transition:width .6s var(--ease)}
+.rank-score{font-size:16px;font-weight:800;color:var(--text2);text-align:center}
+.rank-meta{font-size:11px;color:var(--text3);white-space:nowrap}
+
+/* TOP / WORST RESULTS */
+.top-result{display:grid;grid-template-columns:32px 36px 36px 1fr auto;gap:10px;align-items:start;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);margin-bottom:4px;text-decoration:none;color:inherit;transition:all .2s var(--ease)}
+.top-result:hover{background:var(--bg4);border-color:var(--border2);transform:translateX(3px)}
+.top-result.worst:hover{border-color:rgba(239,68,68,.3)}
+.top-rank{font-size:12px;font-weight:700;color:var(--text3);text-align:center;padding-top:2px}
+.top-grade{font-size:12px;font-weight:800;text-align:center;border-radius:4px;padding:2px 8px;line-height:1.4}
+.top-score{font-size:16px;font-weight:800;text-align:center;padding-top:0}
+.top-info{min-width:0}
+.top-title{display:block;font-size:13px;font-weight:600;color:var(--blue);line-height:1.35;margin-bottom:2px}
+.top-result:hover .top-title{color:#60a5fa}
+.top-sub{display:block;font-size:11px;color:var(--text3)}
+.top-summary{display:block;font-size:11px;color:var(--text3);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.top-issues{display:block;font-size:11px;color:var(--red);margin-top:3px;font-weight:500}
+.top-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11px;color:var(--text3);padding-top:2px;white-space:nowrap}
+.top-domain{opacity:.6}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px}
+.tab{padding:8px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s var(--ease)}
+.tab:hover,.tab.active{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.tab.active{border-color:var(--purple);color:var(--purple)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* FOOTER */
+.footer{text-align:center;padding:48px 24px;border-top:1px solid var(--border);color:var(--text3);font-size:13px;margin-top:48px}
+.footer a{color:var(--purple);text-decoration:none}.footer strong{color:var(--text2)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero{padding:48px 16px 40px}
+  .grade-hero{flex-direction:column;gap:20px}
+  .section{padding:32px 16px 0}
+  .rank-row{grid-template-columns:28px 32px 1fr 36px;gap:6px}.rank-meta{display:none}
+  .top-result{grid-template-columns:28px 32px 32px 1fr;gap:6px}.top-meta{display:none}
+  .criteria-row{grid-template-columns:1fr 36px 1fr 36px;gap:8px}
+  .dist-row{grid-template-columns:32px 1fr 36px 44px}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-pill">📊 Quality Grading Report</div>
+    <h1>Research Quality Analysis</h1>
+    <p class="hero-sub">Every one of the 2,488 discovered resources scored on authority, recency, content depth, and reliability.</p>
+    <div class="grade-hero">
+      <div class="grade-circle">
+        <span class="grade-letter">B</span>
+        <span class="grade-score-num">60.3/100</span>
+      </div>
+      <div class="grade-details">
+        <span><strong>2,488</strong> resources graded</span>
+        <span><strong>82</strong> rated A or higher</span>
+        <span><strong>47</strong> need improvement</span>
+        <span>Average score: <strong>60.3</strong></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-title">Grade Distribution</h2>
+  <p class="section-sub">How all 2,488 results distribute across quality grades</p>
+  
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#10b981">A+</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:0.7636655948553055%;background:#10b981"></div>
+            </div>
+            <span class="dist-count">19</span>
+            <span class="dist-pct">0.8%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#22c55e">A</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:2.532154340836013%;background:#22c55e"></div>
+            </div>
+            <span class="dist-count">63</span>
+            <span class="dist-pct">2.5%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#84cc16">B+</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:28.778135048231512%;background:#84cc16"></div>
+            </div>
+            <span class="dist-count">716</span>
+            <span class="dist-pct">28.8%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#eab308">B</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:23.754019292604504%;background:#eab308"></div>
+            </div>
+            <span class="dist-count">591</span>
+            <span class="dist-pct">23.8%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#f59e0b">C+</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:23.47266881028939%;background:#f59e0b"></div>
+            </div>
+            <span class="dist-count">584</span>
+            <span class="dist-pct">23.5%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#f97316">C</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:18.810289389067524%;background:#f97316"></div>
+            </div>
+            <span class="dist-count">468</span>
+            <span class="dist-pct">18.8%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#ef4444">D</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:1.8488745980707395%;background:#ef4444"></div>
+            </div>
+            <span class="dist-count">46</span>
+            <span class="dist-pct">1.8%</span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-grade" style="color:#dc2626">F</span>
+            <div class="dist-bar-bg">
+                <div class="dist-bar-fill" style="width:0.04019292604501608%;background:#dc2626"></div>
+            </div>
+            <span class="dist-count">1</span>
+            <span class="dist-pct">0.0%</span>
+        </div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Scoring Criteria</h2>
+  <p class="section-sub">Each result is scored across 9 quality signals — max 100 points</p>
+  
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Author credited</span>
+                <span class="criteria-desc">Named, real author ⤑ trustworthy</span>
+            </div>
+            <span class="criteria-pts">+15</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:55.62700964630225%"></div>
+            </div>
+            <span class="criteria-pct">56%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Authority domain</span>
+                <span class="criteria-desc">Harvard, NIH, NYT, BBC, etc.</span>
+            </div>
+            <span class="criteria-pts">+15</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:9.766881028938906%"></div>
+            </div>
+            <span class="criteria-pct">10%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Rich summary</span>
+                <span class="criteria-desc">Exa.ai generated a long summary</span>
+            </div>
+            <span class="criteria-pts">+15</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:100.0%"></div>
+            </div>
+            <span class="criteria-pct">100%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Content depth</span>
+                <span class="criteria-desc">Text preview &gt; 2000 characters</span>
+            </div>
+            <span class="criteria-pts">+12</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:100.0%"></div>
+            </div>
+            <span class="criteria-pct">100%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Recent (&lt; 1 year)</span>
+                <span class="criteria-desc">Published within last 12 months</span>
+            </div>
+            <span class="criteria-pts">+12</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:58.80225080385853%"></div>
+            </div>
+            <span class="criteria-pct">59%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Good title</span>
+                <span class="criteria-desc">Descriptive title &gt; 15 chars</span>
+            </div>
+            <span class="criteria-pts">+8</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:99.31672025723472%"></div>
+            </div>
+            <span class="criteria-pct">99%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">Published date</span>
+                <span class="criteria-desc">Known publication date</span>
+            </div>
+            <span class="criteria-pts">+8</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:68.36816720257235%"></div>
+            </div>
+            <span class="criteria-pct">68%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">HTTPS</span>
+                <span class="criteria-desc">Secure connection</span>
+            </div>
+            <span class="criteria-pts">+5</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:99.7588424437299%"></div>
+            </div>
+            <span class="criteria-pct">100%</span>
+        </div>
+        <div class="criteria-row">
+            <div class="criteria-info">
+                <span class="criteria-name">PDF source</span>
+                <span class="criteria-desc">Academic/official document</span>
+            </div>
+            <span class="criteria-pts">+5</span>
+            <div class="criteria-bar-bg">
+                <div class="criteria-bar-fill" style="width:3.135048231511254%"></div>
+            </div>
+            <span class="criteria-pct">3%</span>
+        </div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Use Case Ranking</h2>
+  <p class="section-sub">All 25 use cases ranked by average resource quality</p>
+  
+        <div class="rank-row">
+            <span class="rank-pos">#1</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Learning Guitar from Scratch</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:65.76%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">66</span>
+            <span class="rank-meta">100 results</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#2</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Building a Daily Meditation Practice</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:63.855555555555554%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">64</span>
+            <span class="rank-meta">90 results · 1 A+ · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#3</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Training for a First Marathon</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:63.77777777777778%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">64</span>
+            <span class="rank-meta">99 results</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#4</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Mastering Photography for a Side Income</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:63.3%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">63</span>
+            <span class="rank-meta">100 results · 1 A+ · 3 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#5</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Transitioning to a Plant-Based Diet</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:63.3%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">63</span>
+            <span class="rank-meta">100 results · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#6</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Becoming a Competitive Chess Player</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:62.88%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">63</span>
+            <span class="rank-meta">100 results · 1 A+ · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#7</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Transitioning from Employee to Freelancer</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:62.2%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">62</span>
+            <span class="rank-meta">100 results · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#8</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Producing Music from Home</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:62.08%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">62</span>
+            <span class="rank-meta">100 results · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#9</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Understanding and Managing ADHD as an Adult</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:61.8%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">62</span>
+            <span class="rank-meta">100 results · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#10</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Starting an Organic Urban Garden</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:61.04%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">61</span>
+            <span class="rank-meta">100 results · 3 A+ · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#11</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Fixing Chronic Sleep Problems</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:60.82%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">61</span>
+            <span class="rank-meta">100 results · 4 A+ · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#12</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Building Personal Financial Literacy</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:60.54%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">61</span>
+            <span class="rank-meta">100 results · 1 A+ · 3 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#13</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Teaching Your Child to Swim</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:60.37%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">60</span>
+            <span class="rank-meta">100 results · 1 A+ · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#14</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Learning to Draw Realistic Portraits</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:60.33%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">60</span>
+            <span class="rank-meta">100 results · 2 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#15</span>
+            <span class="rank-grade" style="color:#eab308">B</span>
+            <div class="rank-info">
+                <span class="rank-title">Data Literacy for Better Decision-Making</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:60.23%;background:#eab308"></div>
+                </div>
+            </div>
+            <span class="rank-score">60</span>
+            <span class="rank-meta">100 results</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#16</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Retirement Lifestyle Design</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:59.97%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">60</span>
+            <span class="rank-meta">100 results · 1 A+</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#17</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Writing and Publishing a Novel</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:59.46%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">59</span>
+            <span class="rank-meta">100 results · 5 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#18</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Launching a First Startup</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:58.55%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">59</span>
+            <span class="rank-meta">100 results · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#19</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Career Pivot at 45 into UX Research</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:57.87%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">58</span>
+            <span class="rank-meta">100 results · 2 A+ · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#20</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">First-Time Parenting</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:57.25%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">57</span>
+            <span class="rank-meta">100 results · 3 A+ · 3 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#21</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Learning German for Immigration</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:56.87%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">57</span>
+            <span class="rank-meta">100 results · 5 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#22</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Buying Your First Home</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:56.74%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">57</span>
+            <span class="rank-meta">100 results · 1 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#23</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Understanding Science to Help Kids with Homework</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:56.5%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">56</span>
+            <span class="rank-meta">100 results · 1 A+ · 3 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#24</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Becoming a Confident Public Speaker</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:56.16%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">56</span>
+            <span class="rank-meta">100 results · 4 weak</span>
+        </div>
+        <div class="rank-row">
+            <span class="rank-pos">#25</span>
+            <span class="rank-grade" style="color:#f59e0b">C+</span>
+            <div class="rank-info">
+                <span class="rank-title">Deepening Spiritual Practice and Religious Study</span>
+                <div class="rank-bar-bg">
+                    <div class="rank-bar-fill" style="width:55.93939393939394%;background:#f59e0b"></div>
+                </div>
+            </div>
+            <span class="rank-score">56</span>
+            <span class="rank-meta">99 results · 2 weak</span>
+        </div>
+</div>
+
+<div class="section">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(event,'top')">🏆 Top 30 Results</button>
+    <button class="tab" onclick="switchTab(event,'weak')">⚠️ 20 Weakest Results</button>
+  </div>
+  <div class="tab-panel active" id="panel-top">
+    
+        <a href="https://www.cdc.gov/act-early/media/pdfs/2025/10/cdc-milestone-checklists-ltsae-english-508.pdf" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#1</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">95</span>
+            <div class="top-info">
+                <span class="top-title">Milestone Checklists</span>
+                <span class="top-sub">First-Time Parenting › Topic 7</span>
+                <span class="top-summary">The CDC webpage provides a comprehensive overview of developmental milestones for babies from birth to 12 months, focusing on what to expect at each stage and when to consult a ped…</span>
+            </div>
+            <div class="top-meta">
+                <span>CDC</span>
+                <span class="top-domain">cdc.gov</span>
+            </div>
+        </a>
+        <a href="https://order.nia.nih.gov/sites/default/files/2025-04/exercise-and-older-adults-nia_0.pdf" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#2</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">95</span>
+            <div class="top-info">
+                <span class="top-title">Exercise and Physical Activity for Older Adults: Staying Active as You Age</span>
+                <span class="top-sub">Retirement Lifestyle Design › Topic 8</span>
+                <span class="top-summary">The National Institute on Aging emphasizes the critical role of physical activity for older adults, particularly in maintaining both physical and mental health during retirement. E…</span>
+            </div>
+            <div class="top-meta">
+                <span>National Institute on Aging</span>
+                <span class="top-domain">nih.gov</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=8ihY2TZXuz0" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#3</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">How Meditation Actually Changes Your Brain (Backed by Science!)</span>
+                <span class="top-sub">Building a Daily Meditation Practice › Topic 1</span>
+                <span class="top-summary">The video &quot;How Meditation Actually Changes Your Brain (Backed by Science!)&quot; explores the neuroscience behind meditation and its effects on the brain, particularly focusin…</span>
+            </div>
+            <div class="top-meta">
+                <span>Dr. Tracey Marks</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=Dkx770Zlm3g" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#4</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">10 Portrait Lighting Patterns with Ab Sesay - YouTube</span>
+                <span class="top-sub">Mastering Photography for a Side Income › Topic 4</span>
+                <span class="top-summary">In the video &quot;Flat, Rembrandt, Rim, and Everything In Between,&quot; Ab Sesay presents a detailed tutorial on 10 essential portrait lighting patterns, including Rembrandt, But…</span>
+            </div>
+            <div class="top-meta">
+                <span>Adorama</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.investopedia.com/terms/i/ira.asp" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#5</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Individual Retirement Account (IRA): What It Is, 4 Types</span>
+                <span class="top-sub">Building Personal Financial Literacy › Topic 7</span>
+                <span class="top-summary">The webpage from Investopedia provides a comprehensive overview of Individual Retirement Accounts (IRAs), detailing their purpose, types, and key features. 
+
+**Types of IRAs:**
+1. …</span>
+            </div>
+            <div class="top-meta">
+                <span>Full Bio</span>
+                <span class="top-domain">investopedia.com</span>
+            </div>
+        </a>
+        <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/fsn3.70788" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#6</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Comparative Analysis of Breastfeeding and Infant Formulas: Short</span>
+                <span class="top-sub">First-Time Parenting › Topic 4</span>
+                <span class="top-summary">The article &quot;Comparative Analysis of Breastfeeding and Infant Formulas: Short‐ and Long‐Term Impacts on Infant Nutrition and Health&quot; provides a comprehensive review of th…</span>
+            </div>
+            <div class="top-meta">
+                <span>Kalmee Pramoda Kariyawasam</span>
+                <span class="top-domain">wiley.com</span>
+            </div>
+        </a>
+        <a href="https://www.ncbi.nlm.nih.gov/books/NBK615503/" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#7</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Interventions to Support Breastfeeding: Updated Evidence Report and Systematic Review…</span>
+                <span class="top-sub">First-Time Parenting › Topic 4</span>
+                <span class="top-summary">The report titled &quot;Interventions to Support Breastfeeding: Updated Evidence Report and Systematic Review for the U.S. Preventive Services Task Force&quot; provides a comprehen…</span>
+            </div>
+            <div class="top-meta">
+                <span>Carrie D. Patnode, Caitlyn A. Senge…</span>
+                <span class="top-domain">nih.gov</span>
+            </div>
+        </a>
+        <a href="https://en.wikipedia.org/wiki/King_and_pawn_versus_king_endgame" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#8</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">King and pawn versus king endgame</span>
+                <span class="top-sub">Becoming a Competitive Chess Player › Topic 3</span>
+                <span class="top-summary">The Wikipedia article on &quot;King and pawn versus king endgame&quot; provides essential insights into one of the fundamental endgames in chess. This endgame is crucial for player…</span>
+            </div>
+            <div class="top-meta">
+                <span>Contributors to Wikimedia projects</span>
+                <span class="top-domain">wikipedia.org</span>
+            </div>
+        </a>
+        <a href="https://www.reddit.com/r/Vermiculture/comments/1ivf994/how_do_you_keep_your_kitchen_scraps_in_your/" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#9</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">How do you keep your kitchen scraps in your compost bin ... - Reddit</span>
+                <span class="top-sub">Starting an Organic Urban Garden › Topic 6</span>
+                <span class="top-summary">To prevent kitchen scraps from molding in a compost bin, especially in small spaces, several strategies can be employed:
+
+1. **Smaller Pieces**: Use a food processor or blender to …</span>
+            </div>
+            <div class="top-meta">
+                <span>virtuosoo08</span>
+                <span class="top-domain">reddit.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=2zVX5ay_3aM" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#10</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">The Ultimate Worm Bin Setup Guide - YouTube</span>
+                <span class="top-sub">Starting an Organic Urban Garden › Topic 6</span>
+                <span class="top-summary">The video &quot;The Ultimate Worm Bin Setup Guide&quot; provides a comprehensive overview of vermicomposting, ideal for those looking to compost kitchen scraps in small spaces. It …</span>
+            </div>
+            <div class="top-meta">
+                <span>Growing with the Griffins</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=3tn_JfQlcpw&vl=en" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#11</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Drip Irrigation for Containers—Never Hand Water Again - YouTube</span>
+                <span class="top-sub">Starting an Organic Urban Garden › Topic 9</span>
+                <span class="top-summary">This video provides a comprehensive guide on setting up a self-watering drip irrigation system specifically designed for container gardens, ideal for busy gardeners who want to eli…</span>
+            </div>
+            <div class="top-meta">
+                <span>CaliKim29 Garden \u0026 Home DIY</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=ZD-h2Em_Lvs" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#12</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">How to Kick in Swimming: Beginner Tips for Effective Flutter Kicks</span>
+                <span class="top-sub">Teaching Your Child to Swim › Topic 5</span>
+                <span class="top-summary">This video tutorial focuses on teaching beginners the effective flutter kick technique in swimming, making it particularly useful for young children learning to swim. Key points in…</span>
+            </div>
+            <div class="top-meta">
+                <span>Rocket Swimming</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.coursera.org/articles/user-experience-research" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#13</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">User Experience Research: Methods, Best Practices, and Career Potential</span>
+                <span class="top-sub">Career Pivot at 45 into UX Research › Topic 1</span>
+                <span class="top-summary">User experience (UX) research focuses on understanding how users interact with products, aiming to enhance user satisfaction by addressing their needs, goals, and pain points. Key …</span>
+            </div>
+            <div class="top-meta">
+                <span>Coursera Staff</span>
+                <span class="top-domain">coursera.org</span>
+            </div>
+        </a>
+        <a href="https://www.coursera.org/articles/in-demand-data-analyst-skills-to-get-hired" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#14</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">7 In-Demand Data Analyst Skills to Get You Hired in 2026 | Coursera</span>
+                <span class="top-sub">Career Pivot at 45 into UX Research › Topic 8</span>
+                <span class="top-summary">The article from Coursera outlines seven essential skills for aspiring data analysts, emphasizing the growing demand for these professionals. Key skills include SQL, statistical pr…</span>
+            </div>
+            <div class="top-meta">
+                <span>Coursera Staff</span>
+                <span class="top-domain">coursera.org</span>
+            </div>
+        </a>
+        <a href="https://www.bbc.co.uk/bitesize/articles/zpdsjfr" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#15</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Five fun ways to teach science in home education for 5-11 year olds - BBC Bitesize</span>
+                <span class="top-sub">Understanding Science to Help Kids with Homework › Topic 7</span>
+                <span class="top-summary">To help your child with science homework while fostering discovery and curiosity, consider these five engaging strategies from BBC Bitesize:
+
+1. **Talk and Explore Together**: Enga…</span>
+            </div>
+            <div class="top-meta">
+                <span>BBC Bitesize</span>
+                <span class="top-domain">bbc.co.uk</span>
+            </div>
+        </a>
+        <a href="https://www.nature.com/articles/s44323-025-00029-1?error=cookies_not_supported&code=82628e3d-7a0c-4edc-acd9-973075c57df6" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#16</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Beyond vision: effects of light on the circadian clock and mood-related behaviours</span>
+                <span class="top-sub">Fixing Chronic Sleep Problems › Topic 2</span>
+                <span class="top-summary">The article &quot;Beyond vision: effects of light on the circadian clock and mood-related behaviours&quot; discusses the significant role of light in regulating the circadian clock…</span>
+            </div>
+            <div class="top-meta">
+                <span>Albrecht, Urs</span>
+                <span class="top-domain">nature.com</span>
+            </div>
+        </a>
+        <a href="https://en.wikipedia.org/wiki/Light_effects_on_circadian_rhythm" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#17</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">Light effects on circadian rhythm</span>
+                <span class="top-sub">Fixing Chronic Sleep Problems › Topic 2</span>
+                <span class="top-summary">The article on &quot;Light effects on circadian rhythm&quot; explains how light influences circadian rhythms, which are biological processes that follow a roughly 24-hour cycle, re…</span>
+            </div>
+            <div class="top-meta">
+                <span>Contributors to Wikimedia projects</span>
+                <span class="top-domain">wikipedia.org</span>
+            </div>
+        </a>
+        <a href="https://www.sciencedirect.com/science/article/pii/S138994572500173X" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#18</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">World Sleep Society recommendations for the use of wearable consumer health trackers …</span>
+                <span class="top-sub">Fixing Chronic Sleep Problems › Topic 8</span>
+                <span class="top-summary">The article from the World Sleep Society provides comprehensive recommendations for using wearable consumer health trackers that monitor sleep. It emphasizes the importance of unde…</span>
+            </div>
+            <div class="top-meta">
+                <span>G.V. Research</span>
+                <span class="top-domain">sciencedirect.com</span>
+            </div>
+        </a>
+        <a href="https://www.webmd.com/sleep-disorders/when-to-call-doctor" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#19</span>
+            <span class="top-grade" style="background:#10b98120;color:#10b981">A+</span>
+            <span class="top-score" style="color:#10b981">90</span>
+            <div class="top-info">
+                <span class="top-title">When to Call a Doctor About Sleep Disorders - WebMD</span>
+                <span class="top-sub">Fixing Chronic Sleep Problems › Topic 9</span>
+                <span class="top-summary">If you&#x27;re experiencing sleep problems such as sleep apnea, restless legs, or chronic insomnia, it&#x27;s important to know when to consult a doctor. Key warning signs include …</span>
+            </div>
+            <div class="top-meta">
+                <span>WebMD Editorial Contributor</span>
+                <span class="top-domain">webmd.com</span>
+            </div>
+        </a>
+        <a href="https://www.health.harvard.edu/staying-healthy/vo2-max-what-is-it-and-how-can-you-improve-it" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#20</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">VO2 max: What is it and how can you improve it? - Harvard Health</span>
+                <span class="top-sub">Training for a First Marathon › Topic 1</span>
+                <span class="top-summary">The article from Harvard Health explains VO2 max, a key indicator of aerobic fitness that measures the maximum amount of oxygen your body can utilize during intense exercise. It hi…</span>
+            </div>
+            <div class="top-meta">
+                <span>Lindsay Warner</span>
+                <span class="top-domain">harvard.edu</span>
+            </div>
+        </a>
+        <a href="https://link.springer.com/10.1007/s12671-025-02549-0" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#21</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">Mindfulness-Based Interventions and Neuroplasticity: A Review of Network Connectivity…</span>
+                <span class="top-sub">Building a Daily Meditation Practice › Topic 1</span>
+                <span class="top-summary">The article &quot;Mindfulness-Based Interventions and Neuroplasticity&quot; reviews how mindfulness practices influence brain structure and function, particularly focusing on neuro…</span>
+            </div>
+            <div class="top-meta">
+                <span>Green, Sheryl M.</span>
+                <span class="top-domain">springer.com</span>
+            </div>
+        </a>
+        <a href="https://www.psychologytoday.com/us/blog/the-empowerment-diary/201709/calming-the-monkey-mind" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#22</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">Calming the Monkey Mind</span>
+                <span class="top-sub">Building a Daily Meditation Practice › Topic 4</span>
+                <span class="top-summary">The article discusses the concept of the &quot;monkey mind,&quot; which refers to a restless and unsettled state of mind that can hinder success and creativity. It emphasizes that …</span>
+            </div>
+            <div class="top-meta">
+                <span>Diana Raab Ph.D.</span>
+                <span class="top-domain">psychologytoday.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=bTvmDGDuUZ4" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#23</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">How to Tune a Guitar for Beginners with a Tuner - YouTube</span>
+                <span class="top-sub">Learning Guitar from Scratch › Topic 1</span>
+                <span class="top-summary">In the video &quot;How to Tune a Guitar for Beginners with a Tuner,&quot; Lauren Bateman provides a comprehensive guide on tuning a guitar, focusing on using a clip-on tuner. She e…</span>
+            </div>
+            <div class="top-meta">
+                <span>Lauren Bateman</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=8Wa2CmPc-a8" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#24</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">6 Essential Strums for Beginners - YouTube</span>
+                <span class="top-sub">Learning Guitar from Scratch › Topic 3</span>
+                <span class="top-summary">In the video &quot;Beginner Strum Patterns - 6 Essential Strums for Beginners,&quot; Lauren Bateman teaches six fundamental strumming patterns ideal for acoustic guitar beginners. …</span>
+            </div>
+            <div class="top-meta">
+                <span>Lauren Bateman</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=psL01o6W50I" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#25</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">The BEST Fingerstyle PATTERNS To Learn FIRST . . . - YouTube</span>
+                <span class="top-sub">Learning Guitar from Scratch › Topic 5</span>
+                <span class="top-summary">This video provides a beginner-friendly introduction to fingerpicking patterns, focusing on essential techniques for developing thumb independence and coordination. It covers simpl…</span>
+            </div>
+            <div class="top-meta">
+                <span>Acoustic Guitar Lessons</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=GwkMGC0BQzg" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#26</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">8 Common Guitar-Learning Mistakes (And How to Fix Them!)</span>
+                <span class="top-sub">Learning Guitar from Scratch › Topic 10</span>
+                <span class="top-summary">The video &quot;8 Common Guitar-Learning Mistakes (And How to Fix Them!)&quot; by James addresses frequent pitfalls that beginners encounter while learning guitar and offers practi…</span>
+            </div>
+            <div class="top-meta">
+                <span>Good Guitarist</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=bA5Xp925Chg" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#27</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">3 Essential Studio Lighting Setups for Stunning Portraits (Rembrandt ...</span>
+                <span class="top-sub">Mastering Photography for a Side Income › Topic 4</span>
+                <span class="top-summary">This tutorial video by Eli Infante covers three essential portrait lighting setups: Rembrandt, Loop, and Butterfly lighting. It provides practical demonstrations of each technique,…</span>
+            </div>
+            <div class="top-meta">
+                <span>Professional Photographers of Ameri…</span>
+                <span class="top-domain">youtube.com</span>
+            </div>
+        </a>
+        <a href="https://link.springer.com/article/10.1007/s00394-024-03453-4?error=cookies_not_supported&code=3d55271f-1937-4fc5-8124-839afa6c109c" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#28</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">Micronutrient intake and status in young vegans, lacto-ovo-vegetarians, pescatarians,…</span>
+                <span class="top-sub">Transitioning to a Plant-Based Diet › Topic 2</span>
+                <span class="top-summary">The study evaluates micronutrient intake and status among young individuals (ages 16-24) in Norway following various diets: vegan, lacto-ovo-vegetarian, pescatarian, flexitarian, a…</span>
+            </div>
+            <div class="top-meta">
+                <span>Medin, Anine Christine</span>
+                <span class="top-domain">springer.com</span>
+            </div>
+        </a>
+        <a href="https://www.britannica.com/money/what-is-compounding" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#29</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">Britannica Money</span>
+                <span class="top-sub">Building Personal Financial Literacy › Topic 2</span>
+                <span class="top-summary">The article from Britannica discusses the concept of compound interest and its significance in building wealth through investments. It emphasizes the importance of starting to inve…</span>
+            </div>
+            <div class="top-meta">
+                <span>Dan Rosenberg</span>
+                <span class="top-domain">britannica.com</span>
+            </div>
+        </a>
+        <a href="https://www.wiley.com/en-us/Common+Sense+on+Mutual+Funds%2C+Updated+10th+Anniversary+Edition-p-9780470597484" target="_blank" rel="noopener" class="top-result">
+            <span class="top-rank">#30</span>
+            <span class="top-grade" style="background:#22c55e20;color:#22c55e">A</span>
+            <span class="top-score" style="color:#22c55e">86</span>
+            <div class="top-info">
+                <span class="top-title">Common Sense on Mutual Funds, Updated 10th Anniversary Edition</span>
+                <span class="top-sub">Building Personal Financial Literacy › Topic 6</span>
+                <span class="top-summary">The &quot;Common Sense on Mutual Funds, Updated 10th Anniversary Edition&quot; by John C. Bogle emphasizes the advantages of index funds over actively managed funds, particularly i…</span>
+            </div>
+            <div class="top-meta">
+                <span>John C. Bogle ,   David F. Swensen …</span>
+                <span class="top-domain">wiley.com</span>
+            </div>
+        </a>
+  </div>
+  <div class="tab-panel" id="panel-weak">
+    
+        <a href="https://de.scribd.com/document/634246804/Schreiben-B2-Goethe-pdf" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#1</span>
+            <span class="top-grade" style="background:#dc262620;color:#dc2626">F</span>
+            <span class="top-score" style="color:#dc2626">24</span>
+            <div class="top-info">
+                <span class="top-title"></span>
+                <span class="top-sub">Learning German for Immigration › Topic 7</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">scribd.com</span>
+            </div>
+        </a>
+        <a href="https://www.talktoangel.com/blog/effective-ways-to-manage-glossophobia" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#2</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Effective Ways to Manage Glossophobia (Fear of Public ...</span>
+                <span class="top-sub">Becoming a Confident Public Speaker › Topic 1</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">talktoangel.com</span>
+            </div>
+        </a>
+        <a href="https://www.amazon.com/Presentation-approach-presenting-Graphic-Communication/dp/0321934156" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#3</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Presentation Zen Design: Simple Design Principles and Techniques to Enhance Your Pres…</span>
+                <span class="top-sub">Becoming a Confident Public Speaker › Topic 5</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">amazon.com</span>
+            </div>
+        </a>
+        <a href="https://healthyhappylife.com/mom-life/kid-recipes/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#4</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">kid recipes</span>
+                <span class="top-sub">Transitioning to a Plant-Based Diet › Topic 7</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">healthyhappylife.com</span>
+            </div>
+        </a>
+        <a href="https://ai.aaps.space/tools/debt-calculator" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#5</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Debt Snowball vs Avalanche Calculator - AI aaps space</span>
+                <span class="top-sub">Building Personal Financial Literacy › Topic 3</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">aaps.space</span>
+            </div>
+        </a>
+        <a href="https://www.chase.com/personal/banking/education/budgeting-saving/how-much-should-i-have-in-emergency-fund" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#6</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Guide to Emergency Fund | Chase</span>
+                <span class="top-sub">Building Personal Financial Literacy › Topic 4</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">chase.com</span>
+            </div>
+        </a>
+        <a href="https://www.writtenacademy.com/blog/complete-guide-to-working-with-beta-readers" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#7</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">The complete guide to working with beta readers</span>
+                <span class="top-sub">Writing and Publishing a Novel › Topic 7</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">writtenacademy.com</span>
+            </div>
+        </a>
+        <a href="https://www.usaa.com/insurance/property/homeowners/coverage/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#8</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Home Insurance Coverage Types</span>
+                <span class="top-sub">Buying Your First Home › Topic 9</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">usaa.com</span>
+            </div>
+        </a>
+        <a href="https://courses.sketchacademy.com/build-a-daily-drawing-habit" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#9</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Build a Daily Drawing Habit - Sketch Academy</span>
+                <span class="top-sub">Learning to Draw Realistic Portraits › Topic 10</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">sketchacademy.com</span>
+            </div>
+        </a>
+        <a href="https://www.facebook.com/groups/941462313611564/posts/1537754257315697/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#10</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">How parents manage stress and burnout?</span>
+                <span class="top-sub">First-Time Parenting › Topic 9</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">facebook.com</span>
+            </div>
+        </a>
+        <a href="https://www.facebook.com/groups/geniuschessacademy/posts/3951497378397375/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#11</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Calculating chess moves for beginners and intermediate players</span>
+                <span class="top-sub">Becoming a Competitive Chess Player › Topic 5</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">facebook.com</span>
+            </div>
+        </a>
+        <a href="https://de.scribd.com/document/612244760/B2-German-Vocabulary" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#12</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title"></span>
+                <span class="top-sub">Learning German for Immigration › Topic 5</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">scribd.com</span>
+            </div>
+        </a>
+        <a href="https://www.goethe.de/ins/in/en/spr/ueb/ele.html" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#13</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title"></span>
+                <span class="top-sub">Learning German for Immigration › Topic 10</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">goethe.de</span>
+            </div>
+        </a>
+        <a href="https://www.berkeleypsychiatrists.co.uk/blog/effective-organisation-management-for-adults-with-adhd" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#14</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Effective Organisation Management for Adults with ADHD</span>
+                <span class="top-sub">Understanding and Managing ADHD as an Adult › Topic 4</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">berkeleypsychiatrists.co.uk</span>
+            </div>
+        </a>
+        <a href="https://www.dripdepot.com/automated-vacation-plant-watering-kit-kit-size-standard" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#15</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Automated Vacation Plant Watering Kit - Drip Depot</span>
+                <span class="top-sub">Starting an Organic Urban Garden › Topic 9</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">dripdepot.com</span>
+            </div>
+        </a>
+        <a href="https://www.facebook.com/groups/9867182460018747/posts/27390106853966370/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#16</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">32</span>
+            <div class="top-info">
+                <span class="top-title">Lectio Divina: Four Stages of Spiritual Practice - Facebook</span>
+                <span class="top-sub">Deepening Spiritual Practice and Religious Study › Topic 8</span>
+                <span class="top-issues">No author · No date · Little text</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">facebook.com</span>
+            </div>
+        </a>
+        <a href="http://meatlessmonday.publichealth.jhu.edu/resources/how-get-started-meatless-monday" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#17</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">35</span>
+            <div class="top-info">
+                <span class="top-title">How to Get Started With Meatless Monday</span>
+                <span class="top-sub">Transitioning to a Plant-Based Diet › Topic 10</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">jhu.edu</span>
+            </div>
+        </a>
+        <a href="http://www.ableton.com/en/classroom/support/first-steps-ableton-live/lesson-session-view/" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#18</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">35</span>
+            <div class="top-info">
+                <span class="top-title">Lesson: First Steps in Session View - Ableton</span>
+                <span class="top-sub">Producing Music from Home › Topic 1</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">ableton.com</span>
+            </div>
+        </a>
+        <a href="https://dharmacrafts.com/pages/the-4-seated-meditation-positions" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#19</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">36</span>
+            <div class="top-info">
+                <span class="top-title">The 4 Seated Meditation Positions</span>
+                <span class="top-sub">Building a Daily Meditation Practice › Topic 8</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">dharmacrafts.com</span>
+            </div>
+        </a>
+        <a href="https://leanstack.com/lean-canvas" target="_blank" rel="noopener" class="top-result worst">
+            <span class="top-rank">#20</span>
+            <span class="top-grade" style="background:#ef444420;color:#ef4444">D</span>
+            <span class="top-score" style="color:#ef4444">36</span>
+            <div class="top-info">
+                <span class="top-title">Lean Canvas</span>
+                <span class="top-sub">Launching a First Startup › Topic 2</span>
+                <span class="top-issues">No author · No date</span>
+            </div>
+            <div class="top-meta">
+                <span class="top-domain">leanstack.com</span>
+            </div>
+        </a>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>Quality analysis for <strong>Maintor</strong> research data · Powered by <a href="https://exa.ai" target="_blank">Exa.ai</a></p>
+  <p style="margin-top:6px;font-size:12px">Generated on February 17, 2026 at 20:21</p>
+</footer>
+
+<script>
+function switchTab(e, id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>
